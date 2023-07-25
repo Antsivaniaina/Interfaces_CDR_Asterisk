@@ -13,7 +13,7 @@ import {
   cilMediaPlay,
   cilCheck,
   cilX
-} from '@coreui/icons'
+} from '@coreui/icons';
 import {
   CCard,
   CCardBody,
@@ -26,8 +26,8 @@ import {
   CWidgetStatsC,
   CWidgetStatsE,
   CWidgetStatsF,
-} from '@coreui/react'
-import { getStyle , hexToRgba} from '@coreui/utils'
+} from '@coreui/react';
+import { getStyle } from '@coreui/utils';
 
 
 function Dashboard() {
@@ -190,7 +190,61 @@ function Dashboard() {
             }}
           />
         </CCardBody>
-      </CCard>
+          </CCard>
+          <CCard className="mb-4">
+  {/* <CCardBody>
+    <CRow>
+      <CCol sm={5}>
+        <h4 id="traffic" className="card-title mb-0">
+          Statuts d'appels
+        </h4>
+      </CCol>
+    </CRow>
+    <CChartBar
+      style={{ height: '300px', marginTop: '40px' }}
+      data={{
+        labels: ['Répondu', 'Non répondu', 'Occupé', 'Autre'],
+        datasets: [
+          {
+            label: 'Nombre d\'appels',
+            backgroundColor: [
+              getStyle('--cui-success'),
+              getStyle('--cui-danger'),
+              getStyle('--cui-warning'),
+              getStyle('--cui-info'),
+            ],
+            data: [totalappelRepondu, totalappelManquer, totalappel - (totalappelRepondu + totalappelManquer), totalappel - (totalappelRepondu + totalappelManquer)],
+          },
+        ],
+      }}
+      options={{
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+          },
+        },
+        scales: {
+          x: {
+            grid: {
+              drawOnChartArea: true,
+              display: true,
+            },
+          },
+          y: {
+            ticks: {
+              beginAtZero: true,
+              maxTicksLimit: 5,
+              stepSize: Math.ceil(250 / 5),
+              max: 250,
+              display: true,
+            },
+          },
+        },
+      }}
+    />
+  </CCardBody> */}
+</CCard>
             </div>
         </div>
     )
