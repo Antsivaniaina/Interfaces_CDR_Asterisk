@@ -99,10 +99,11 @@ function Appel() {
     const [destination, setDestination] = useState('');
     const [source, setSource] = useState('');
     const [status, setStatus] = useState('');
-    const [heure, setHeure] = useState('');
+    const [startheure, setStartHeure] = useState('');
+    const [endheure, setEndHeure] = useState('');
 
     const rechercheParDate = (data) => {
-        if (startDate === '' && endDate === '') {
+        if (startDate === '' || endDate === '') {
             return data;
         } else {
             return data.filter(item => (
@@ -120,6 +121,42 @@ function Appel() {
         ));
         }
     };
+    const rechercheParSource = (data) => {
+        if (source === '') {
+            return data;
+        } else {
+            return data.filter(item => (
+            item.src === source 
+        ));
+        }
+    };
+    const rechercheParDestination = (data) => {
+        if (destination === '') {
+            return data;
+        } else {
+            return data.filter(item => (
+            item.dst === destination 
+        ));
+        }
+    };
+    const rechercheParStatus = (data) => {
+        if (status === '') {
+            return data;
+        } else {
+            return data.filter(item => (
+            item.disposition === status 
+        ));
+        }
+    };
+    const rechercheParHeure = (data) => {
+        if (startheure === '' || endheure === '') {
+            return data;
+        } else {
+            return data.filter(item => (
+            item.heure >= startheure && item.heure <= endheure 
+        ));
+        }
+    };
     
     const affichageRecherche = (data) => { 
         if (!selectedOption || selectedOption.length === 0) {
@@ -134,6 +171,18 @@ function Appel() {
                     break;
                 case 'durée':
                     filteredData = rechercheDuree(filteredData);
+                    break;
+                case 'source':
+                    filteredData = rechercheParSource(filteredData);
+                    break;
+                case 'destination':
+                    filteredData = rechercheParDestination(filteredData);
+                    break;
+                case 'status':
+                    filteredData = rechercheParStatus(filteredData);
+                    break;
+                case 'heure':
+                    filteredData = rechercheParHeure(filteredData);
                     break;
                 default:
                     filteredData = data;
@@ -168,37 +217,54 @@ function Appel() {
                 return (   
                    <CFormFloating>
                         <CFormInput type="number" id="floatingInput" onChange={(event) => { setDuree(event.target.value)}}/>
-                    <CFormLabel htmlFor="floatingInput">Durée de l'appel</CFormLabel>
-                </CFormFloating>
+                        <CFormLabel htmlFor="floatingInput">Durée de l'appel</CFormLabel>
+                    </CFormFloating>
                 );
             
             case 'destination':
                 return (   
                    <CFormFloating>
-                    <CFormInput type="number" id="floatingInput"/>
+                    <CFormInput type="number" id="floatingInput" onChange={(event) => { setDestination(event.target.value)}}/>
                     <CFormLabel htmlFor="floatingInput">Entre le numéro du destination de l'appel :</CFormLabel>
                 </CFormFloating>
                 );
             case 'source':
                 return (   
                    <CFormFloating>
-                    <CFormInput type="number" id="floatingInput"/>
+                    <CFormInput type="number" id="floatingInput" onChange={(event) => { setSource(event.target.value)}}/>
                     <CFormLabel htmlFor="floatingInput">Entre le numéro de la source de l'appel :</CFormLabel>
                 </CFormFloating>
                 );
             case 'status':
                 return (   
-                   <CFormFloating>
-                    <CFormInput type="number" id="floatingInput"/>
+                    <CFormFloating>
+                        <CFormSelect className="mb-3" aria-label="Status de l'appel" id="floatingInput" onChange={(event) => { setStatus(event.target.value)}}>
+                            <option value="ANSWERED">ANSWERED</option>
+                            <option value="NO ANSWER">NO ANSWER</option>
+                            <option value="BUSY">BUSY</option>
+                            <option value="CONGESTION">CONGESTION</option>
+                        </CFormSelect>
                     <CFormLabel htmlFor="floatingInput">Séléctionner le status de l'appel :</CFormLabel>
                 </CFormFloating>
                 );
             case 'heure':
                 return (   
-                   <CFormFloating>
-                    <CFormInput type="time" id="floatingInput"/>
-                    <CFormLabel htmlFor="floatingInput">Entre l'heure de l'appel :</CFormLabel>
-                </CFormFloating>
+                   <>
+                        <CForm className="row gy-2 gx-3 align-items-center ">
+                            <CCol sm={6}>
+                                <CFormFloating className="mb-3">
+                                    <CFormInput type="time" id="floatingInput" onChange={(event) => { setStartHeure(event.target.value)}}/>
+                                    <CFormLabel htmlFor="floatingInput">De :</CFormLabel>
+                                </CFormFloating>
+                            </CCol>
+                            <CCol sm={6}>
+                                <CFormFloating className="mb-3">
+                                    <CFormInput type="time" id="floatingInput" disabled={!startDate} onChange={(event) => { setEndHeure(event.target.value)}}/>
+                                    <CFormLabel htmlFor="floatingInput">A :</CFormLabel>
+                                </CFormFloating>
+                            </CCol>
+                        </CForm>
+                    </>
                 );
             
             default:
@@ -246,7 +312,8 @@ function Appel() {
             <div className='dashboard-content-header'>
                 <h2>Liste des appels</h2>
             </div>
-            <CCol sm={3}>
+            <CRow>
+                <CCol sm={3}>
                  <ReactSelect
                 options={data}
                 isMulti
@@ -257,11 +324,12 @@ function Appel() {
                 />
                 
             </CCol>
-            <CCol sm={8}>
+            <CCol sm={5}>
                 {selectedOption.map((option) => {
                     return renderInput(option);
                 })}
             </CCol>
+            </CRow>
             <div>
                 <Datatable
                 columns={colonne}
