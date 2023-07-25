@@ -27,7 +27,7 @@ function App() {
 
   useEffect(() => {
     const loggedIn = localStorage.getItem('isLoggedIn');
-    setIsLoggedIn(loggedIn === 'true');
+    setIsLoggedIn(loggedIn === 'true'); 
   }, []);
   
   return(

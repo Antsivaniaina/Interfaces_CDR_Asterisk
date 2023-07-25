@@ -65,7 +65,7 @@ function Dashboard() {
           'http://localhost/www.cdr.com/ReactNotes/src/backend/appel/getAppelParHeure.php'
         );
         setAppelsParHeure(response.data);
-        console.log(response.data); // Stocker les données d'appels par heure dans l'état
+       // Stocker les données d'appels par heure dans l'état
       } catch (error) {
         console.error('Erreur lors de la récupération des données d\'appels par heure :', error);
       }

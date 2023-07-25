@@ -12,7 +12,7 @@ if ($conn) {
     $data = json_decode($jsonData, true);
     $nom=$data['nom'];
     $mdp=$data['mdp'];
-    $sql="INSERT INTO users VALUES('$nom','$mdp')";
+    $sql="DELETE FROM users WHERE nom = '$nom' AND mdp = '$mdp'";
     $conn->query($sql);
 } else {
     //die(mysqli_error($con));

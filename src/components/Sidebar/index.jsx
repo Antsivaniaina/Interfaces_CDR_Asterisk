@@ -51,7 +51,7 @@ function SideBar({ menu }) {
           <div className="sidebar-footer" onClick={localStorage.removeItem('isLoggedIn')}>
             <span className="sidebar-item-label">Deconnexion</span>
             <img src={LogoutIcon} alt="icon-logout" className="sidebar-item-icon" />
-          </div>
+          </div>        
         </div>
       </div>
     </nav>

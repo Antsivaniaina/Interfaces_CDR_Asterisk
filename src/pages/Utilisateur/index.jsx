@@ -31,7 +31,7 @@ function Utilisateur () {
     //Afficher les données dans la base 
      const fetchEtudiantsData = async () => {
       try {
-          const response = await axios.get('http://localhost/www.gnote.com/ReactNotes/src/backend/login/affichageUser.php');
+          const response = await axios.get('http://localhost/www.cdr.com/ReactNotes/src/backend/login/affichageUser.php');
         if (!response.data) {
           throw new Error('Erreur lors de la récupération des données');
         }
@@ -43,11 +43,9 @@ function Utilisateur () {
      //Ajouter les données dans la base
     const handleFormSubmit = async (e) => {
         try {
-            const response = await axios.post('http://localhost/www.gnote.com/ReactNotes/src/backend/etudiant/ajout_etudiant.php', {   
-             matricule: formValues.matricule,
+            const response = await axios.post('http://localhost/www.cdr.com/ReactNotes/src/backend/login/ajout_users.php', {   
              nom: formValues.nom,
-             adresse: formValues.adresse,
-             niveau: formValues.niveau,
+             mdp: formValues.mdp1,
             });
 
             if (response.status === 200) {
@@ -58,9 +56,9 @@ function Utilisateur () {
             // Afficher une alerte pour confirmer l'ajout
             Swal.fire({
                 title: 'Succès!',
-                text: 'Etudiant ajouté avec succès.',
+                text: 'Utilisateur créer avec succès.',
                 icon: 'success',
-                confirmButtonText: 'Cool',
+                confirmButtonText: 'OK',
                 confirmButtonColor: 'green',
             });
 
@@ -70,7 +68,7 @@ function Utilisateur () {
             // Si la requête a échoué, afficher une alerte d'erreur
             Swal.fire({
                 title: 'Erreur!',
-                text: 'Une erreur est survenue lors de l\'ajout de l\'étudiant.',
+                text: 'Une erreur est survenue lors de la création de l\'tuilisateur.',
                 icon: 'error',
                 confirmButtonText: 'OK',
                 confirmButtonColor: 'red',
@@ -82,26 +80,12 @@ function Utilisateur () {
     };
     //Afficher le formulaire d'ajout
   const handleShowPopup = () => {
-           const selectOptions = {
-            'Seconde': '1',
-            'Première L': '2',
-            'Première S': '3',
-            'Première OSE': '4',
-            'Terminale L': '5',
-            'Terminale S': '6',
-            'Terminale OSE': '7',
-          };
         Swal.fire({
-          title: 'Ajouter un étudiant',
+          title: 'Créer nouveau un utilisateur',
           html:`
-                <input id="matricule" class="swal2-input" placeholder="Matricule">
                 <input id="nom" class="swal2-input" placeholder="Nom">
-                <input id="adresse" class="swal2-input" placeholder="Adresse">
-                <select id="niveau" class="swal2-select">
-                  ${Object.entries(selectOptions)
-                    .map(([label, value]) => `<option value="${label}">${label}</option>`)
-                    .join('')}
-                </select>
+                <input id="mdp1" class="swal2-input" placeholder="Entrer un mot de passe">
+                <input id="mdp2" class="swal2-input" placeholder="Confirmer le mot de passe">
               `,
             
           focusConfirm: false,
@@ -121,20 +105,30 @@ function Utilisateur () {
         //   },
         }).then((result) => {
             if (!result.dismiss) {
-                formValues.matricule = document.getElementById('matricule').value;
-                formValues.nom = document.getElementById('nom').value;
-                formValues.adresse = document.getElementById('adresse').value;
-                formValues.niveau = document.getElementById('niveau').value;
-              handleFormSubmit();
+                formValues.mdp1 = document.getElementById('mdp1').value;
+              formValues.nom = document.getElementById('nom').value;
+              formValues.mdp2 = document.getElementById('mdp2').value;
+              if (formValues.mdp1 !== formValues.mdp2) {
+                Swal.fire({
+                  title: 'Erreur!',
+                  text: 'Les mots de passe ne sont pas identiques.Veuiller verifier.',
+                  icon: 'error',
+                  confirmButtonText: 'OK',
+                  confirmButtonColor: 'red',
+                })
+              }else {
+                   handleFormSubmit();
+                }
+             
           }
         });
         };
      // Fonction pour gérer la suppression d'un étudiant
-  const handleDelete = async (matricule) => {
+  const handleDelete = async (nom,mdp) => {
     try {
       // Afficher une alerte de confirmation avant de procéder à la suppression
       const confirmation = await Swal.fire({
-        title: 'Êtes-vous sûr(e) de vouloir supprimer cet étudiant ?',
+        title: 'Êtes-vous sûr(e) de vouloir supprimer cet utilisateur ?',
         text: "Cette action est irréversible !",
         icon: 'warning',
         showCancelButton: true,
@@ -146,8 +140,9 @@ function Utilisateur () {
 
       // Si l'utilisateur a cliqué sur le bouton "Oui, supprimer", procéder à la suppression
       if (confirmation.isConfirmed) {
-        const response = await axios.post('http://localhost/www.gnote.com/ReactNotes/src/backend/etudiant/supprimer_etudiant.php', {
-          matricule: matricule,
+        const response = await axios.post('http://localhost/www.cdr.com/ReactNotes/src/backend/login/supprimer_users.php', {
+          nom: nom,
+          mdp : mdp,
         });
 
         if (response.status === 200) {
@@ -157,7 +152,7 @@ function Utilisateur () {
           // Afficher une alerte pour confirmer la suppression
           Swal.fire({
             title: 'Succès!',
-            text: 'Étudiant supprimé avec succès.',
+            text: 'Utilisateur supprimé avec succès.',
             icon: 'success',
             confirmButtonText: 'OK',
             confirmButtonColor: 'green',
@@ -166,7 +161,7 @@ function Utilisateur () {
           // Si la suppression a échoué, afficher une alerte d'erreur
           Swal.fire({
             title: 'Erreur!',
-            text: 'Une erreur est survenue lors de la suppression de l\'étudiant.',
+            text: 'Une erreur est survenue lors de la suppression de l\'utilisateur.',
             icon: 'error',
             confirmButtonText: 'OK',
             confirmButtonColor: 'red',
@@ -180,30 +175,15 @@ function Utilisateur () {
     
     // Fonction pour gérer l'édition d'un étudiant
   const handleEdit = (etudiant) => {
-    const selectOptions = {
-            'Seconde': '1',
-            'Première L': '2',
-            'Première S': '3',
-            'Première OSE': '4',
-            'Terminale L': '5',
-            'Terminale S': '6',
-            'Terminale OSE': '7',
-          };
   setSelectedEtudiant(etudiant);
   setEditMode(true);
   // Ouvrir la popup pour l'édition (utiliser les valeurs de l'étudiant sélectionné)
   Swal.fire({
     title: 'Modifier un étudiant',
     html:`
-          <input id="matricule" class="swal2-input" placeholder="Matricule" disabled value="${etudiant.matricule}">
-          <input id="matricule" style="display:none" class="matricule swal2-input" placeholder="Matricule" value="${etudiant.matricule}">
           <input id="nom" class="swal2-input" placeholder="Nom" value="${etudiant.nom}">
-          <input id="adresse" class="swal2-input" placeholder="Adresse" value="${etudiant.adresse}">
-          <select id="niveau" class="swal2-select">
-            ${Object.entries(selectOptions)
-              .map(([label, value]) => `<option value="${label}">${label}</option>`)
-              .join('')}
-          </select>
+          <input id="mdp1" class="swal2-input" placeholder="Adresse" value="${etudiant.mdp}">
+          <input id="mdp2" class="swal2-input" placeholder="Nouveau mot de passe">
         `,
     focusConfirm: false,
     showCancelButton: true,
@@ -211,25 +191,16 @@ function Utilisateur () {
     confirmButtonColor: 'green',
     cancelButtonText: 'Annuler',
     cancelButtonColor: 'red',
-    didOpen: () => {
-      const niveauInput = document.getElementById('niveau');
-      const defaultValue = etudiant.niveau; // Définissez ici la valeur initiale que vous souhaitez utiliser
-      niveauInput.value = defaultValue;
-    },
   }).then((result) => {
     if (!result.dismiss) {
       // Récupérer les valeurs des champs de saisie après l'édition
-      const matricule = document.getElementById('matricule').value;
+      const mdp = document.getElementById('mdp2').value;
       const nom = document.getElementById('nom').value;
-      const adresse = document.getElementById('adresse').value;
-      const niveau = document.getElementById('niveau').value;
 
       // Effectuer ici la requête pour mettre à jour l'étudiant dans la base de données avec les nouvelles valeurs
-      axios.post('http://localhost/www.gnote.com/ReactNotes/src/backend/etudiant/modifier_etudiant.php', {
-        matricule: matricule,
+      axios.post('http://localhost/www.cdr.com/ReactNotes/src/backend/login/modifier_users.php', {
         nom: nom,
-        adresse: adresse,
-        niveau: niveau,
+        mdp: mdp,
       }).then((response) => {
         // Mettre à jour l'état des étudiants après la modification réussie
         fetchEtudiantsData();
@@ -237,7 +208,7 @@ function Utilisateur () {
         // Afficher une alerte pour confirmer la modification
         Swal.fire({
           title: 'Succès!',
-          text: 'Étudiant modifié avec succès.',
+          text: 'Utilisateur modifié avec succès.',
           icon: 'success',
           confirmButtonText: 'OK',
           confirmButtonColor: 'green',
@@ -247,7 +218,7 @@ function Utilisateur () {
         // Afficher une alerte d'erreur si la requête a échoué
         Swal.fire({
           title: 'Erreur!',
-          text: 'Une erreur est survenue lors de la modification de l\'étudiant.',
+          text: 'Une erreur est survenue lors de la modification de l\'utilisateur.',
           icon: 'error',
           confirmButtonText: 'OK',
           confirmButtonColor: 'red',
@@ -259,7 +230,8 @@ function Utilisateur () {
   });
 };
     
-    useEffect(() => {
+  useEffect(() => {
+    fetchEtudiantsData();
     }, []);
 
     return(
@@ -279,16 +251,14 @@ function Utilisateur () {
                     <thead>
                         <th>NOM </th>
                         <th>Mot de passe</th>
+                        <th>MODIFIER</th>
+                        <th>SUPPRIMER</th>
                     </thead>
-
-                    {orders.length !== 0 ?
                         <tbody>
                             {etudiants.map((order, index) => (
                                 <tr key={index}>
-                                    <td><span>{order.matricule}</span></td>
                                     <td><span>{order.nom}</span></td>
-                                    <td><span>{order.adresse}</span></td>
-                                    <td><span>{order.niveau}</span></td>
+                                    <td><span>{order.mdp}</span></td>
                                     <td>
                                         {/* Bouton Modifier */}
                                   <button
@@ -302,7 +272,7 @@ function Utilisateur () {
                                         {/* Bouton Supprimer */}
                                         <button
                                         className='btn btn-danger'
-                                        onClick={() => handleDelete(order.matricule)} // Appeler la fonction handleDelete avec le matricule de l'étudiant
+                                        onClick={() => handleDelete(order.nom,order.mdp)} // Appeler la fonction handleDelete avec le matricule de l'étudiant
                                         >
                                         Supprimer
                                         </button>
@@ -310,7 +280,6 @@ function Utilisateur () {
                                 </tr>
                             ))}
                         </tbody>
-                    : null}
                 </table>
             </div>
         </div>
