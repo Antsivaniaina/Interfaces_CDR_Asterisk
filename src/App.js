@@ -9,37 +9,51 @@ import './App.css';
 
 import Dashboard from './pages/Dashboard';
 import Appel from './pages/Appel';
+import Utilisateur from './pages/Utilisateur';
 
-function App () {
+import { useState } from 'react';
+import Login from './pages/login/Login';
+import { useEffect } from 'react';
+
+function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const handleLogin = () => { 
+    setIsLoggedIn(true);
+  };
+
+  const hanldeLogout = () => { 
+    setIsLoggedIn(false);
+  }; 
+
+  useEffect(() => {
+    const loggedIn = localStorage.getItem('isLoggedIn');
+    setIsLoggedIn(loggedIn === 'true');
+  }, []);
+  
   return(
     <Router>
       <div className='dashboard-container'>
-        <SideBar menu={sidebar_menu} />
+        {isLoggedIn ? (
+          <>
+            <SideBar menu={sidebar_menu} />
           
           <div className='dashboard-body'>
               <Routes>
                   <Route path="*" element={<div></div>} />
                   <Route exact path="/" element={< Dashboard/>} />
                   <Route exact path="/appel" element={< Appel/>} />
+                  <Route exact path="/utilisateur" element={< Utilisateur/>} />
                   {/* <Route exact path="/products" element={< Notes/>} />
                   <Route exact path="/locations" element={<div></div>} /> */}
               </Routes>
           </div>
+          </>
+        ) : (
+            <Login onLogin={handleLogin} />
+        )}
       </div>
     </Router>
   )
 }
-
-
-//AFFICHAGE LOGIN
-//  <div>
-//       <h2>Connexion</h2>
-//       {error && <p>{error}</p>}
-//       <form onSubmit={handleSubmit}>
-//         <input type='text' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} />
-//         <input type='password' placeholder='Mot de passe' value={password} onChange={(e) => setPassword(e.target.value)} />
-//         <button type='submit'>Se connecter</button>
-//       </form>
-//     </div>
 
 export default App;

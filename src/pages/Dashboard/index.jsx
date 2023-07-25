@@ -37,10 +37,6 @@ function Dashboard() {
   //const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
   const [appelsParHeure, setAppelsParHeure] = useState([]);
   
-
-
-  
- 
   useEffect(() => {
     axios.get('http://localhost/www.cdr.com/ReactNotes/src/backend/appel/getTotal.php')
       .then(response => {

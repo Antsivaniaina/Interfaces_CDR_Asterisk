@@ -15,6 +15,12 @@ const sidebar_menu = [
         path: '/appel',
         title: 'Détails des appels',
     },
+    {
+        id: 3,
+        icon: DashboardIcon,
+        path: '/utilisateur',
+        title: 'Utilisateurs',
+    },
     
     
 ]
