@@ -10,7 +10,9 @@ import {
   cilBasket,
   cilPhone,
   cilMediaStop,
-  cilMediaPlay
+  cilMediaPlay,
+  cilCheck,
+  cilX
 } from '@coreui/icons'
 import {
   CCard,
@@ -32,7 +34,12 @@ function Dashboard() {
   const [totalappelManquer, setTotalappelManquer] = useState([]);
   const [totalappel, setTotalappel] = useState([]);
   const [totalappelRepondu, setTotalappelRepondu] = useState([]);
-  const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
+  //const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
+  const [appelsParHeure, setAppelsParHeure] = useState([]);
+  
+
+
+  
  
   useEffect(() => {
     axios.get('http://localhost/www.cdr.com/ReactNotes/src/backend/appel/getTotal.php')
@@ -56,6 +63,19 @@ function Dashboard() {
       .catch(error => {
         console.error('Erreur lors de l\'affichage des donnée :', error)
       });
+    const fetchAppelsParHeure = async () => {
+      try {
+        const response = await axios.get(
+          'http://localhost/www.cdr.com/ReactNotes/src/backend/appel/getAppelParHeure.php'
+        );
+        setAppelsParHeure(response.data);
+        console.log(response.data); // Stocker les données d'appels par heure dans l'état
+      } catch (error) {
+        console.error('Erreur lors de la récupération des données d\'appels par heure :', error);
+      }
+    };
+
+    fetchAppelsParHeure();
        
     }, []);
 
@@ -78,7 +98,7 @@ function Dashboard() {
             </CCol>
              <CCol sm={10} md={3}>
               <CWidgetStatsC
-                icon={<CIcon icon={cilMediaPlay} height={36} />}
+                icon={<CIcon icon={cilCheck} height={36} />}
                 value={totalappelRepondu}
                 title="Appel avec réponse"
                 progress={{ color: 'success',value: (totalappelRepondu*100/totalappel) }}
@@ -87,7 +107,7 @@ function Dashboard() {
             </CCol>
             <CCol sm={10} md={3} >
               <CWidgetStatsC
-                icon={<CIcon icon={cilMediaStop} height={36} />}
+                icon={<CIcon icon={cilX} height={36} />}
                 value = {totalappelManquer}
                 title="Appel sans réponse"  
                 progress={{ color: 'danger',value: (totalappelManquer*100/totalappel) }}
@@ -110,59 +130,26 @@ function Dashboard() {
           <CRow>
             <CCol sm={5}>
               <h4 id="traffic" className="card-title mb-0">
-                Traffic des appels
+                Fréquence des appels en 24H
               </h4>
-              <div className="small text-medium-emphasis">January - July 2021</div>
             </CCol>
           </CRow>
           <CChartLine
             style={{ height: '300px', marginTop: '40px' }}
             data={{
-              labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+              //labels: ['0', '1', '2', '3', '4', '5', '6','7', '8', '9', '10', '11', '12', '13','14', '15', '16', '17', '18', '19', '20','21', '22', '23'],
+              labels : appelsParHeure.map((heureAppel) => `${heureAppel.heure}h`),
               datasets: [
                 {
-                  label: 'My First dataset',
-                 // backgroundColor: hexToRgba(getStyle('--cui-info'), 10),
-                  backgroundColor: 'transparent',
+                  label: 'Nombre d\' appel',
+                  backgroundColor: 'rgba(75, 192, 192, 0.4)',
                   borderColor: getStyle('--cui-info'),
                   pointHoverBackgroundColor: getStyle('--cui-info'),
                   borderWidth: 2,
-                  data: [
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                  ],
-                  fill: true,
-                },
-                {
-                  label: 'My Second dataset',
-                  backgroundColor: 'transparent',
-                  borderColor: getStyle('--cui-success'),
-                  pointHoverBackgroundColor: getStyle('--cui-success'),
-                  borderWidth: 2,
-                  data: [
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                    random(50, 200),
-                  ],
-                },
-                {
-                  label: 'My Third dataset',
-                  backgroundColor: 'transparent',
-                  borderColor: getStyle('--cui-danger'),
-                  pointHoverBackgroundColor: getStyle('--cui-danger'),
-                  borderWidth: 1,
-                  borderDash: [8, 5],
-                  data: [65, 65, 65, 65, 65, 65, 65],
-                },
+                  data: appelsParHeure.map((heureAppel) => heureAppel.nombreAppels),
+                  fill: false,
+                  tension: 0,
+                }
               ],
             }}
             options={{
@@ -175,7 +162,8 @@ function Dashboard() {
               scales: {
                 x: {
                   grid: {
-                    drawOnChartArea: false,
+                    drawOnChartArea: true,
+                    display: true,
                   },
                 },
                 y: {
@@ -184,6 +172,7 @@ function Dashboard() {
                     maxTicksLimit: 5,
                     stepSize: Math.ceil(250 / 5),
                     max: 250,
+                    display: true,
                   },
                 },
               },

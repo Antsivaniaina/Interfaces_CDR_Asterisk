@@ -5,6 +5,8 @@ import { SimpleDropdown } from 'react-js-dropdavn';
 import 'react-js-dropdavn/dist/index.css';
 import Swal from 'sweetalert2';
 import Datatable from 'react-data-table-component';
+import ReactSelect from 'react-select';
+
 import 'styled-components'
 import {
 //   CCard,
@@ -87,11 +89,12 @@ const customFrenchText = {
 
 
 
-function Appel () {
+function Appel() {
+    const currentDate = new Date().toISOString().split('T')[0]; 
     const [appel, setAppel] = useState([]);
-    const [selectedOption, setSelectedOption] = useState(null);
-    const [endDate, setEndDate] = useState('');
-    const [startDate, setStartDate] = useState('');
+    const [selectedOption, setSelectedOption] = useState([]);
+    const [endDate, setEndDate] = useState(currentDate);
+    const [startDate, setStartDate] = useState(currentDate);
     const [duree, setDuree] = useState('');
     const [destination, setDestination] = useState('');
     const [source, setSource] = useState('');
@@ -119,34 +122,42 @@ function Appel () {
     };
     
     const affichageRecherche = (data) => { 
-
-        if (selectedOption === null) {
+        if (!selectedOption || selectedOption.length === 0) {
             return data;
         }
-        switch (selectedOption) {
-            case 'date':
-                return rechercheParDate(data);
-            case 'durée':
-                return rechercheDuree(data);
+        let filteredData = [...data];
+        selectedOption.forEach((option) => {
+
+            switch (option) {
+                case 'date':
+                    filteredData = rechercheParDate(filteredData);
+                    break;
+                case 'durée':
+                    filteredData = rechercheDuree(filteredData);
+                    break;
+                default:
+                    filteredData = data;
         }
-       // return affichageRecherche;
+         });
+        
+       return filteredData;
     };
 
-    const renderInput = () => { 
-        switch (selectedOption) {
+    const renderInput = (selectionner) => { 
+        switch (selectionner) {
             case 'date':
                 return (
                     <>
                         <CForm className="row gy-2 gx-3 align-items-center ">
                             <CCol sm={6}>
                                 <CFormFloating className="mb-3">
-                                    <CFormInput type="date" id="floatingInput" onChange={(event) => { setStartDate(event.target.value)}}/>
+                                    <CFormInput type="date" id="floatingInput" value={startDate} onChange={(event) => { setStartDate(event.target.value)}}/>
                                     <CFormLabel htmlFor="floatingInput">Du :</CFormLabel>
                                 </CFormFloating>
                             </CCol>
                             <CCol sm={6}>
                                 <CFormFloating className="mb-3">
-                                    <CFormInput type="date" id="floatingInput" onChange={(event) => { setEndDate(event.target.value)}}/>
+                                    <CFormInput type="date" id="floatingInput" disabled={!startDate} value={endDate} onChange={(event) => { setEndDate(event.target.value)}}/>
                                     <CFormLabel htmlFor="floatingInput">Au :</CFormLabel>
                                 </CFormFloating>
                             </CCol>
@@ -185,7 +196,7 @@ function Appel () {
             case 'heure':
                 return (   
                    <CFormFloating>
-                    <CFormInput type="number" id="floatingInput"/>
+                    <CFormInput type="time" id="floatingInput"/>
                     <CFormLabel htmlFor="floatingInput">Entre l'heure de l'appel :</CFormLabel>
                 </CFormFloating>
                 );
@@ -235,19 +246,21 @@ function Appel () {
             <div className='dashboard-content-header'>
                 <h2>Liste des appels</h2>
             </div>
-            <CCol sm={2}>
-                <SimpleDropdown
+            <CCol sm={3}>
+                 <ReactSelect
                 options={data}
-                clearable
-                searchable
-                labels={label}
+                isMulti
                 onChange={(selected) => {
-                    setSelectedOption(selected ? selected.value : null);
-                }}       
-            />
+                    setSelectedOption(selected ? selected.map(option => option.value) : []);
+                }}
+                placeholder="Rechercher ..."
+                />
+                
             </CCol>
             <CCol sm={8}>
-                {renderInput()}
+                {selectedOption.map((option) => {
+                    return renderInput(option);
+                })}
             </CCol>
             <div>
                 <Datatable

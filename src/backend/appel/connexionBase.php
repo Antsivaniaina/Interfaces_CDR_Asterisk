@@ -1,6 +1,6 @@
 <?php
 
-$host = "192.168.43.209";
+$host = "192.168.88.105";
 $port = "5432";
 $dbname = "projetcdr";
 $user = "postgres";
