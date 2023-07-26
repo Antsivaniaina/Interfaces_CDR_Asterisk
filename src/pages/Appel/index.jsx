@@ -271,17 +271,29 @@ function Appel() {
                 return null;
         }
     };
-    
-    useEffect(() => {
-        axios.get('http://localhost/www.cdr.com/ReactNotes/src/backend/appel/affichage_appel.php')
-            .then(response => {
-                setAppel(response.data)
-            })
-            .catch(error => {
-                console.error('Erreur lors de l\'affichage des donnée :', error)
-            })
-        // fetchAppelData();
-    }, []);
+        useEffect(() => {
+            const fetchData = () => { 
+                axios.get('http://localhost/www.cdr.com/ReactNotes/src/backend/appel/affichage_appel.php')
+                .then(response => {
+                    setAppel(response.data)
+                })
+                .catch(error => {
+                    console.error('Erreur lors de l\'affichage des donnée :', error)
+                })
+            };
+            fetchData();
+            const interval = setInterval(() => {
+                fetchData();
+            }, 3000);
+
+        // Nettoyer l'intervalle lorsque le composant est démonté
+        return () => {
+            clearInterval(interval);
+        };
+            // fetchAppelData();
+        }, []);
+
+   
         
     // Search
    

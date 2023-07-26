@@ -1,7 +1,7 @@
 <?php
 include('connexionBase.php');
 
-$sql = "SELECT src,dst, DATE(calldate) as calldate, TO_CHAR(calldate, 'HH24:MI:SS') as heure, duration,disposition,amaflags,uniqueid, accountcode FROM cdr ORDER BY calldate DESC";
+$sql = "SELECT src,dst, calldate as ordre, DATE(calldate) as calldate, TO_CHAR(calldate, 'HH24:MI:SS') as heure, duration,disposition,amaflags,uniqueid, accountcode FROM cdr ORDER BY ordre DESC";
 try {
     $result= $conn->query($sql);
     $data = array();
